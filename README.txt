@@ -1,139 +1,118 @@
+Installing Drupal 8 with Composer and deploying with Capistrano
 
-CONTENTS OF THIS FILE
----------------------
+This guide will walk you through installing Drupal with Composer, and deploying the install to a remote server using Capistrano
 
- * About Drupal
- * Configuration and features
- * Installation profiles
- * Appearance
- * Developing for Drupal
- * More information
+First of all create an empty repo and clone it on your local machine.
+For this example we will be using a repo hosting on BitBucket but it should be more or less the same for any service.
 
-ABOUT DRUPAL
-------------
+cd project_directory
+git init
+git remote add origin https://EpiphronLtd@bitbucket.org/Company/reponame.git
 
-Drupal is an open source content management platform supporting a variety of
-websites ranging from personal weblogs to large community-driven websites. For
-more information, see the Drupal website at https://www.drupal.org, and join
-the Drupal community at https://www.drupal.org/community.
+ Next download composer.phar to your project directory
 
-Legal information about Drupal:
- * Know your rights when using Drupal:
-   See LICENSE.txt in the "core" directory.
- * Learn about the Drupal trademark and logo policy:
-   https://www.drupal.com/trademark
+curl -sS https://getcomposer.org/installer | php
 
-CONFIGURATION AND FEATURES
---------------------------
+Use composer to install Drupal
 
-Drupal core (what you get when you download and extract a drupal-x.y.tar.gz or
-drupal-x.y.zip file from https://www.drupal.org/project/drupal) has what you
-need to get started with your website. It includes several modules (extensions
-that add functionality) for common website features, such as managing content,
-user accounts, image uploading, and search. Core comes with many options that
-allow site-specific configuration. In addition to the core modules, there are
-thousands of contributed modules (for functionality not included with Drupal
-core) available for download.
+php composer.phar create-project drupal-composer/drupal-project:8.x-dev
 
-More about configuration:
- * Install, update, and maintain Drupal:
-   See INSTALL.txt and UPDATE.txt in the "core" directory.
- * Learn about how to use Drupal to create your site:
-   https://www.drupal.org/documentation
- * Follow best practices:
-   https://www.drupal.org/best-practices
- * Download contributed modules to /modules to extend Drupal's functionality:
-   https://www.drupal.org/project/modules
- * See also: "Developing for Drupal" for writing your own modules, below.
+Move the project files out of the created' installer directory and remove it
 
+mv drupal-project/* .
+rm -r drupal-project
 
-INSTALLATION PROFILES
----------------------
+Configure your silverstripe install by visiting /core/install.php
 
-Installation profiles define additional steps (such as enabling modules,
-defining content types, etc.) that run after the base installation provided
-by core when Drupal is first installed. There are two basic installation
-profiles provided with Drupal core.
+If its not installed, install Capistrano and Capdrupal
 
-Installation profiles from the Drupal community modify the installation process
-to provide a website for a specific use case, such as a CMS for media
-publishers, a web-based project tracking tool, or a full-fledged CRM for
-non-profit organizations raising money and accepting donations. They can be
-distributed as bare installation profiles or as "distributions". Distributions
-include Drupal core, the installation profile, and all other required
-extensions, such as contributed and custom modules, themes, and third-party
-libraries. Bare installation profiles require you to download Drupal Core and
-the required extensions separately; place the downloaded profile in the
-/profiles directory before you start the installation process.
+gem install capistrano
+gem install capdrupal
 
-More about installation profiles and distributions:
- * Read about the difference between installation profiles and distributions:
-   https://www.drupal.org/node/1089736
- * Download contributed installation profiles and distributions:
-   https://www.drupal.org/project/distributions
- * Develop your own installation profile or distribution:
-   https://www.drupal.org/developing/distributions
+Setup Capistrano within your project directory
 
+cap install
 
-APPEARANCE
-----------
+Setup your Capistrano config files
 
-In Drupal, the appearance of your site is set by the theme (themes are
-extensions that set fonts, colors, and layout). Drupal core comes with several
-themes. More themes are available for download, and you can also create your own
-custom theme.
+Set config/deploy.rb
 
-More about themes:
- * Download contributed themes to /themes to modify Drupal's appearance:
-   https://www.drupal.org/project/themes
- * Develop your own theme:
-   https://www.drupal.org/documentation/theme
+lock '3.2.1'
+set :application, 'myapp'
+set :repo_url, 'git@bitbucket.org:Company/repo'
+set :user, "www-data"
+set :group, "www-data"
+set :runner_group, "www-data"
+set :domain, "http://sitedomain"
+set :deploy_to, "/var/www"
+set :linked_files, %w{web/sites/default/settings.php}
+set :app_path, "drupal"
+set :shared_children, ['drupal/sites/default/files']
+set :shared_files, ['drupal/sites/default/settings.php'] 
+set :download_drush, true
+set :scm, "git"
+set :branch, "master"
+namespace :deploy do
+after :finishing, 'drupal:composer:update'
+after :finishing, 'drupal:server:chowndir'
+end
 
-DEVELOPING FOR DRUPAL
----------------------
+Set config/deploy/staging.rb (Replace with your project/server details)
 
-Drupal contains an extensive API that allows you to add to and modify the
-functionality of your site. The API consists of "hooks", which allow modules to
-react to system events and customize Drupal's behavior, and functions that
-standardize common operations such as database queries and form generation. The
-flexible hook architecture means that you should never need to directly modify
-the files that come with Drupal core to achieve the functionality you want;
-instead, functionality modifications take the form of modules.
+role :web, %w{root@server}
+server 'server', user: 'serveruser', roles: %w{web}
 
-When you need new functionality for your Drupal site, search for existing
-contributed modules. If you find a module that matches except for a bug or an
-additional needed feature, change the module and contribute your improvements
-back to the project in the form of a "patch". Create new custom modules only
-when nothing existing comes close to what you need.
+Set lib/capistrano/tasks/silverstripe.rake (Indent as needed)
 
-More about developing:
- * Search for existing contributed modules:
-   https://www.drupal.org/project/modules
- * Contribute a patch:
-   https://www.drupal.org/patch/submit
- * Develop your own module:
-   https://www.drupal.org/developing/modules
- * Follow programming best practices:
-   https://www.drupal.org/developing/best-practices
- * Refer to the API documentation:
-   https://api.drupal.org/api/drupal/8
- * Learn from documented Drupal API examples:
-   https://www.drupal.org/project/examples
+namespace :drupal do
+namespace :composer do
+desc 'Run Composer update'
+task :update do
+on roles(:web) do
+within release_path do
+execute :php, "-d allow_url_fopen=on composer.phar update"
+end
+end
+end
+end
+namespace :server do
+desc 'Run Chown dir'
+task :chowndir do
+on roles(:web) do
+within fetch(:root_dir) do
+execute :chown, "-R www-data:www-data /var/www"
+end
+end
+end
+end
+end
 
-MORE INFORMATION
-----------------
+Push changes to repo
 
- * See the Drupal.org online documentation:
-   https://www.drupal.org/documentation
+git add *
+git commit -m "First commit"
+git push origin master
 
- * For a list of security announcements, see the "Security advisories" page at
-   https://www.drupal.org/security (available as an RSS feed). This page also
-   describes how to subscribe to these announcements via email.
+Make sure you have set up ssh key access to your staging server
 
- * For information about the Drupal security process, or to find out how to
-   report a potential security issue to the Drupal security team, see the
-   "Security team" page at https://www.drupal.org/security-team
+ssh-keygen -t rsa
+cat ~/.ssh/id_rsa.pub | ssh root@stagingserveraddress 'cat >> ~/.ssh/authorized_keys'
 
- * For information about the wide range of available support options, visit
-   https://www.drupal.org and click on Community and Support in the top or
-   bottom navigation.
+You will also need to add the the public key from both your development machine and your staging server, to your repo.
+Refer to your repository host on how to do this.
+
+Run a cold deploy to setup the file structure
+
+cap staging deploy
+
+ This will fail almost instantly citing a missing shared file. Log into your staging server and create the missing files, filling out the details as particular to your hosting environment.
+
+ssh root@stagingserveraddress
+cd /var/www
+
+nano shared/web/sites/default/settings.php
+You simply need to create this file as it will be filled in later
+
+Once you have updated the shared files, run the deploy script again from your development machine
+
+cap staging deploy
