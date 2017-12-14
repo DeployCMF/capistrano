@@ -1,0 +1,5 @@
+# Schema for the theme setting configuration file of the malade theme.
+
+malade.settings:
+  type: theme_settings
+  label: 'malade settings'

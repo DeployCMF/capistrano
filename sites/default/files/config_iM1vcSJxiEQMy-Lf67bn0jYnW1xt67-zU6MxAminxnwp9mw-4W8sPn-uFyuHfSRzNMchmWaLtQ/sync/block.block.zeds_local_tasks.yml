@@ -1,0 +1,22 @@
+uuid: 18e36cbe-4d9e-4c14-8f33-6396b33e0552
+langcode: en
+status: true
+dependencies:
+  theme:
+    - zeds
+_core:
+  default_config_hash: X9I1OB0W3WlWtrK-CNcg6hNWwa8wficanpH8pYnDZDE
+id: zeds_local_tasks
+theme: zeds
+region: content
+weight: -40
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: Tabs
+  provider: core
+  label_display: '0'
+  primary: true
+  secondary: true
+visibility: {  }

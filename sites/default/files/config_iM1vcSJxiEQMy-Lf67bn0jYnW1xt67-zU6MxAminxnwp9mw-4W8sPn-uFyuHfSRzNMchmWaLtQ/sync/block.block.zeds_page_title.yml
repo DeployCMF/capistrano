@@ -1,0 +1,20 @@
+uuid: e892d52d-23d7-453e-973e-1fe00617046e
+langcode: en
+status: true
+dependencies:
+  theme:
+    - zeds
+_core:
+  default_config_hash: 7rR9chwXvdM2H8OYMAYx9Zj3GGlPMrZp_M3ZA4thYTk
+id: zeds_page_title
+theme: zeds
+region: content
+weight: -50
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  provider: core
+  label_display: '0'
+visibility: {  }

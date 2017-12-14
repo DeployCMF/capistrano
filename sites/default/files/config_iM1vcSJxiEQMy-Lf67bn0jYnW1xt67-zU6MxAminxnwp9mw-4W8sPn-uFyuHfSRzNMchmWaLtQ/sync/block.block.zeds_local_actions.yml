@@ -1,0 +1,20 @@
+uuid: 3801d105-c74c-44c2-b3a9-3d115e10f8bd
+langcode: en
+status: true
+dependencies:
+  theme:
+    - zeds
+_core:
+  default_config_hash: 13GQpeITIJsp1kyPniXtWZfyFH87vb1xxJCHifL4UeE
+id: zeds_local_actions
+theme: zeds
+region: content
+weight: -20
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  provider: core
+  label_display: '0'
+visibility: {  }

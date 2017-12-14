@@ -1,0 +1,5 @@
+# Schema for the theme setting configuration file of the zeds theme.
+
+zeds.settings:
+  type: theme_settings
+  label: 'zeds settings'

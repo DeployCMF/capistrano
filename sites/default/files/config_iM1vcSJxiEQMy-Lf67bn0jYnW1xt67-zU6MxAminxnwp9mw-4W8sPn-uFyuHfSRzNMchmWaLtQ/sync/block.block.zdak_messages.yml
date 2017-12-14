@@ -1,0 +1,22 @@
+uuid: 57c9da54-1895-497e-827d-6fa96784457b
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - zdak
+_core:
+  default_config_hash: KHQIJ7Vfl25lTjzIc7qIvnuistt-Mw2O0kG4jCofmkI
+id: zdak_messages
+theme: zdak
+region: highlighted
+weight: 0
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  provider: system
+  label_display: '0'
+visibility: {  }

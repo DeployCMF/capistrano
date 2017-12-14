@@ -1,0 +1,5 @@
+# Schema for the theme setting configuration file of the fouka theme.
+
+fouka.settings:
+  type: theme_settings
+  label: 'fouka settings'

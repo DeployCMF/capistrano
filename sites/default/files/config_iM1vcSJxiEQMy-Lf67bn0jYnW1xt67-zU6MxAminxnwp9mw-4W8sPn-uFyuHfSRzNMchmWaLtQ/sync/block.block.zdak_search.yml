@@ -1,0 +1,22 @@
+uuid: 4093874c-48e8-4ea1-9d82-b6d7b299a31c
+langcode: en
+status: true
+dependencies:
+  module:
+    - search
+  theme:
+    - zdak
+_core:
+  default_config_hash: za-39d5WDUg6XvbyqSnuVYEeq6QM4qKJxW8MnoAha5A
+id: zdak_search
+theme: zdak
+region: sidebar_first
+weight: -1
+provider: null
+plugin: search_form_block
+settings:
+  id: search_form_block
+  label: Search
+  provider: search
+  label_display: visible
+visibility: {  }

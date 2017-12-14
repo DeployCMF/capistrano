@@ -1,0 +1,22 @@
+uuid: 06379d4b-dab0-4e6c-8ea3-35c125631f89
+langcode: en
+status: true
+dependencies:
+  module:
+    - help
+  theme:
+    - zdak
+_core:
+  default_config_hash: 8I8iACSa0sKO3k3jlvUG1ge52rfcKX7USJAQYnzuBgg
+id: zdak_help
+theme: zdak
+region: content
+weight: -30
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  provider: help
+  label_display: '0'
+visibility: {  }

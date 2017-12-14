@@ -1,0 +1,20 @@
+uuid: bb9d9232-1536-43c3-8c83-b714160f079c
+langcode: en
+status: true
+dependencies:
+  theme:
+    - zdak
+_core:
+  default_config_hash: 7rR9chwXvdM2H8OYMAYx9Zj3GGlPMrZp_M3ZA4thYTk
+id: zdak_page_title
+theme: zdak
+region: content
+weight: -50
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  provider: core
+  label_display: '0'
+visibility: {  }
